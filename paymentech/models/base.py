@@ -4,8 +4,10 @@ from xml.etree import ElementTree
 
 class DataField(object):
 
-    def __init__(self, serialization_key):
+    def __init__(self, serialization_key, default=None, max_length=None):
         self.serialization_key = serialization_key
+        self.default = default
+        self.max_length = None
 
 
 class DeclarativeModel(type):
@@ -48,7 +50,7 @@ class PaymentechModel(object, metaclass=DeclarativeModel):
         print("Iterate")
         # Only iterate through the declarative fields, since we inherit dict
         for key, field in six.iteritems(self.fields):
-            yield key, self.data.get(key, None)
+            yield key, self.data.get(key, field.default)
 
     def __setattr__(self, key, value):
         # Only set an attribute if it's part of the declarative fields
@@ -79,6 +81,9 @@ class PaymentechModel(object, metaclass=DeclarativeModel):
 
         payload = ElementTree.Element(wrapper)
         for key, value in self:
+            if value is None:
+                continue
+
             serialization_key = self.fields[key].serialization_key
             child = ElementTree.SubElement(payload, serialization_key)
             child.text = value
