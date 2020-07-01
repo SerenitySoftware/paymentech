@@ -9,3 +9,11 @@ install:
   - pip install flake8
 script:
   - flake8
+deploy:
+  provider: pypi
+  username: __token__
+  password:
+    secure: cq0a+BMLn2HURraOa26ognI9rfnBjoesv80UI84fH4xvtfpDv/jp+T2/U06srR8PBhElUrdWwxdV160h4Q2O+v8ZSQbqMBAGEgaOkrvzfNN+4CxyLBrjy0K7JteePTRl23rXuFc4of3p2vSPMKn22Iabl+jW/lQmSc9yy02T2shm2glTMLs4dOxW0pItDwbMVimmIGe0lXTPV8vBVYIzHKDAshoMnuhzxZ8GeDEAiN+Nu6lTAidctPKW5q16aATBDrtDweoSjzPnzsioPgmJ/NdCTk9hrBYSsAou7gqDyCsFM4VJ//fy2ol4s2dHsEDYtEkkkYB6beYz4Dmafl7SurZAEca/L5U0hAFWnTIMHM+GJX2gK72KTbizDDhvRZaPHVVqtdrPHKwY+bEfsmIp8VkctybJZkyUzO69IicBAdgLknKmL5zD6+Qn4mDJFJy1XJ+TCi6jGKav8o2OAkSQHo2wfxzuP/EEdkc4YTUY7UY7BVPY6KqN7eJG316xTyfWu1Sjlg5JClj3+9dZSTg4UWqJ7SYEu/wGz/hfApkF7Gt//SqM24v0+KXTR2zWec+iYBr70LnJ0ZK0hZbRAecchQiMQmTph4MKm/dOZ5wdJnWvKSZCkn1GIAm4JHW9Lc6j0nzsejIVHoljSqY0LVuGd7oF7rWHbfuD6938sZP5awU=
+  skip_existing: true
+  on:
+    tags: true
