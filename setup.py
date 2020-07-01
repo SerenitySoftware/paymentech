@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="paymentech",
-    version="0.0.1",
+    version="0.0.2",
     author="Jordan Ambra",
     author_email="jordan@serenity.software",
     description="Python SDK for Chase Paymentech",
