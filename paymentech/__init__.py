@@ -1,4 +1,4 @@
-import pathlib
+from .version import version
 
 
 configuration = {
@@ -17,12 +17,9 @@ def configure(merchant_id, bin, username, password, environment="test", **kwargs
     configuration["username"] = username
     configuration["password"] = password
     configuration["environment"] = environment
+    configuration["version"] = version
 
     if environment not in ["test", "production"]:
         raise ValueError("No environment named {0}".format(environment))
-
-    version_file_path = pathlib.Path(__file__).parent.parent.absolute() / "VERSION"
-    with open(version_file_path, "r") as version_file:
-        configuration["version"] = version_file.read().strip()
 
     configuration.update(kwargs)

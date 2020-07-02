@@ -1,12 +1,16 @@
 """Python SDK for Chase Paymentech"""
+import os
 import setuptools
 
 
 with open("README.md", "r") as readme_file:
     long_description = readme_file.read()
 
-with open("VERSION", "r") as version_file:
-    version = version_file.read().strip()
+version_path = os.path.join(os.path.split(__file__)[0], "paymentech/version.py")
+with open(version_path) as version_file:
+    version = ""
+    # Execute the code in version.py.
+    exec(compile(version_file.read(), version_path, 'exec'))
 
 setuptools.setup(
     name="paymentech",
