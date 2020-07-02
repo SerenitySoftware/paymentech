@@ -1,6 +1,5 @@
 """Python SDK for Chase Paymentech"""
 import setuptools
-from distutils.util import convert_path
 
 
 with open("README.md", "r") as readme_file:
