@@ -19,7 +19,7 @@ class PaymentechResource(FieldContainer, metaclass=DeclarativeClass):
             child.text = value
 
         if inject:
-            for key, value in inject:
+            for key, value in inject.items():
                 child = ElementTree.SubElement(payload, key)
                 child.text = value
 
