@@ -1,12 +1,17 @@
 """Python SDK for Chase Paymentech"""
 import setuptools
+from distutils.util import convert_path
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
+
+with open("README.md", "r") as readme_file:
+    long_description = readme_file.read()
+
+with open("VERSION", "r") as version_file:
+    version = version_file.read().strip()
 
 setuptools.setup(
     name="paymentech",
-    version="0.0.2",
+    version=version,
     author="Jordan Ambra",
     author_email="jordan@serenity.software",
     description="Python SDK for Chase Paymentech",
