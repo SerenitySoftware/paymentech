@@ -5,7 +5,7 @@ from paymentech.mixins import DeclarativeClass, FieldContainer
 from paymentech import service
 
 
-class PaymentechResource((object, FieldContainer), metaclass=DeclarativeClass):
+class PaymentechResource(FieldContainer, metaclass=DeclarativeClass):
     def serialize(self, inject=None):
         wrapper = self.meta.wrapper
 
