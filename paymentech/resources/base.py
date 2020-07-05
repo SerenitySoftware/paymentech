@@ -25,7 +25,7 @@ class PaymentechResource(FieldContainer, metaclass=DeclarativeClass):
 
         return str(ElementTree.tostring(payload, 'unicode'))
 
-    def save(self):
+    def transact(self):
         authentication = {
             "OrbitalConnectionUsername": paymentech.configuration.get("username"),
             "OrbitalConnectionPassword": paymentech.configuration.get("password"),
@@ -34,6 +34,19 @@ class PaymentechResource(FieldContainer, metaclass=DeclarativeClass):
             "CustomerMerchantId": paymentech.configuration.get("merchant")
         }
         payload = self.serialize(inject=authentication)
-        response = service.request(payload)
+        result = service.request(payload)
+        response = self.process_result(result)
 
         return response
+
+    @staticmethod
+    def process_result(result):
+        result = ElementTree.fromstring(result)
+        elements = result[0]
+
+        dataset = {
+            child.tag: child.text
+            for child in elements
+        }
+
+        return dataset
