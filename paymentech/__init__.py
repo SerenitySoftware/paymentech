@@ -11,9 +11,14 @@ configuration = {
 }
 
 
-def configure(merchant_id, bin, username, password, environment="test", **kwargs):
+def configure(username, password, merchant_id, platform="pns", environment="test", **kwargs):
+    platform_bins = {
+        "salem": "000001",
+        "pns": "000002"
+    }
+
     configuration["merchant_id"] = merchant_id
-    configuration["bin"] = bin
+    configuration["bin"] = platform_bins.get(platform.lower(), platform_bins["pns"])
     configuration["username"] = username
     configuration["password"] = password
     configuration["environment"] = environment

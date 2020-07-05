@@ -29,6 +29,7 @@ class PaymentechResource(FieldContainer, metaclass=DeclarativeClass):
         authentication = {
             "OrbitalConnectionUsername": paymentech.configuration.get("username"),
             "OrbitalConnectionPassword": paymentech.configuration.get("password"),
+            "BIN": paymentech.configuration.get("bin"),
             "CustomerBin": paymentech.configuration.get("bin"),
             "CustomerMerchantId": paymentech.configuration.get("merchant")
         }
