@@ -105,3 +105,6 @@ class Order(PaymentechResource):
 
     class Meta:
         wrapper = "NewOrder"
+
+    def create(self):
+        return self.transact()
