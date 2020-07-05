@@ -37,3 +37,34 @@ class Profile(PaymentechResource):
 
     class Meta:
         wrapper = "Profile"
+
+    def create(self):
+        self.customer_profile_action = "C"
+        return self.transact()
+
+    def read(self):
+        self.validate_customer_reference_number("read")
+
+        self.customer_profile_action = "R"
+
+        return self.transact()
+
+    def update(self):
+        self.validate_customer_reference_number("update")
+
+        self.customer_profile_action = "U"
+        self.customer_profile_order_override = "NO"
+        self.customer_profile_from_order = "S"
+
+        return self.transact()
+
+    def delete(self):
+        self.validate_customer_reference_number("delete")
+
+        self.customer_profile_action = "D"
+
+        return self.transact()
+
+    def validate_customer_reference_number(self, action="read"):
+        if not self.customer_reference_number:
+            raise ValueError("Set the customer_reference_number to {0} a profile".format(action))
