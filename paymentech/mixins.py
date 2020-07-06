@@ -57,7 +57,7 @@ class FieldContainer:
         if key in self.fields:
             return self.data.get(key, None)
 
-        return None
+        return super().__getattr__(key)
 
     def __getitem__(self, key, encode=True):
         # Return the encoded value that we stored during __setattr__ for
