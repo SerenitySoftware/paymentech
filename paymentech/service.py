@@ -16,7 +16,7 @@ def request(payload):
     environment = paymentech.configuration.get("environment")
     maximum_attempts = paymentech.configuration.get("attempts", 3)
     urls = endpoints[environment]
-    trace = random.randint(1, 9999999999999999)
+    trace = str(random.randint(1, 9999999999999999))
 
     headers = {
         "MIME-Version": "1.1",
