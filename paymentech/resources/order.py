@@ -52,8 +52,8 @@ class Order(PaymentechResource):
     customer_profile_method: str = Field(alias="CustomerProfileFromOrderInd", max_length=5)
     customer_reference_number: str = Field(alias="CustomerRefNum", max_length=22)
     customer_automatic_number_identification: str = Field(alias="CustomerAni", max_length=10)
-    customer_profile_order_override_method: str = Field(alias=
-        "CustomerProfileOrderOverrideInd", default="NO", max_length=2
+    customer_profile_order_override_method: str = Field(
+        alias="CustomerProfileOrderOverrideInd", default="NO", max_length=2
     )
     customer_token_indicator: str = Field(alias="DPANInd", max_length=1)
     status: str = Field(alias="Status", max_length=2)
