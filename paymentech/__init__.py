@@ -25,6 +25,6 @@ def configure(username, password, merchant_id, platform="pns", environment="test
     configuration["version"] = version
 
     if environment not in ["test", "production"]:
-        raise ValueError("No environment named {0}".format(environment))
+        raise ValueError(f"No environment named {environment}")
 
     configuration.update(kwargs)

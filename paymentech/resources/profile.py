@@ -70,4 +70,4 @@ class Profile(PaymentechResource):
 
     def validate_customer_reference_number(self, action="read"):
         if not self.customer_reference_number:
-            raise ValueError("Set the customer_reference_number to {0} a profile".format(action))
+            raise ValueError(f"Set the customer_reference_number to {action} a profile")

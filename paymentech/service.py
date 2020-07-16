@@ -14,6 +14,7 @@ endpoints = {
 
 def request(payload):
     environment = paymentech.configuration.get("environment")
+    version = paymentech.configuration.get("version")
     maximum_attempts = paymentech.configuration.get("attempts", 3)
     urls = endpoints[environment]
     trace = str(random.randint(1, 9999999999999999))
@@ -25,7 +26,7 @@ def request(payload):
         "Request-Number": "1",
         "Document-type": "Request",
         "Trace-Number": trace,
-        "Interface-Version": "Chase Paymentech Python SDK/{0}".format(paymentech.configuration.get("version"))
+        "Interface-Version": f"Chase Paymentech Python SDK/{version}"
     }
 
     for url in urls:
