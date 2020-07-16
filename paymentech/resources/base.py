@@ -1,4 +1,5 @@
 from typing import Optional
+from xml.dom import minidom
 from xml.etree import ElementTree
 
 from pydantic import BaseModel, Field
@@ -20,21 +21,24 @@ class PaymentechResource(BaseModel):
         self.username = paymentech.configuration.get("username")
         self.password = paymentech.configuration.get("password")
         self.bin = self.customer_bin = paymentech.configuration.get("bin")
-        self.merchant_id = paymentech.configuration.get("merchant")
+        self.merchant_id = paymentech.configuration.get("merchant_id")
 
     def serialize(self):
-        wrapper = self.__config__.wrapper
-
-        payload = ElementTree.Element(wrapper)
+        payload = ElementTree.Element("Request")
+        wrapper = ElementTree.SubElement(payload, self.__config__.wrapper)
         dataset = self.dict(by_alias=True)
         for key, value in dataset.items():
             if value is None:
                 continue
 
-            child = ElementTree.SubElement(payload, key)
+            child = ElementTree.SubElement(wrapper, key)
             child.text = value
 
-        return str(ElementTree.tostring(payload, 'unicode'))
+        payload = ElementTree.tostring(payload, 'unicode')
+        payload = minidom.parseString(payload)
+        payload = payload.toprettyxml(indent="  ", encoding="UTF-8")
+
+        return payload
 
     def transact(self):
         payload = self.serialize()
