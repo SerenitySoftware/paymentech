@@ -13,7 +13,7 @@ class PaymentechResource(BaseModel):
     password: Optional[str] = Field(alias="OrbitalConnectionPassword")
     bin: Optional[str] = Field(alias="BIN")
     customer_bin: Optional[str] = Field(alias="CustomerBin")
-    merchant_id: Optional[str] = Field(alias="CustomerMerchantId")
+    merchant_id: Optional[str] = Field(alias="CustomerMerchantID")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
