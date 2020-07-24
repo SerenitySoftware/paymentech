@@ -68,10 +68,12 @@ class Profile(PaymentechResource):
     soft_descriptor_url: Optional[str] = Field(alias="SDMerchantURL", max_length=13)
     soft_descriptor_email: Optional[str] = Field(alias="SDMerchantEmail", max_length=13)
     biller_reference: Optional[str] = Field(alias="BillerReferenceNumber", max_length=25)
-    account_updater_eligibility: Optional[str] = Field(alias="AccountUpdaterEligibility", default="Y", max_length=1)
+    account_updater_eligibility: Optional[str] = Field(alias="AccountUpdaterEligibility", max_length=1)
 
     class Config:
         wrapper = "Profile"
+        response = ProfileResponse
+        skip = ["BIN"]
 
     def create(self):
         self.customer_profile_action = "C"
