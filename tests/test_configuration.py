@@ -11,7 +11,7 @@ def test_configuration():
 
 
 def test_platforms():
-    paymentech.configure("user", "pass", "1", "salem")
+    paymentech.configure("user", "pass", "1", "stratus")
     assert paymentech.configuration.get("bin") == "000001"
 
     paymentech.configure("user", "pass", "1", "pns")
@@ -22,6 +22,6 @@ def test_platforms():
 
 
 def test_configuration_with_additional_options():
-    paymentech.configure("user", "pass", "1", "salem", something="extra")
+    paymentech.configure("user", "pass", "1", "stratus", something="extra")
 
     assert paymentech.configuration.get("something", None) == "extra"
