@@ -13,7 +13,7 @@ configuration = {
 
 def configure(username, password, merchant_id, platform="pns", environment="test", **kwargs):
     platform_bins = {
-        "salem": "000001",
+        "stratus": "000001",
         "pns": "000002"
     }
 
