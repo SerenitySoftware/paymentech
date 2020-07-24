@@ -22,7 +22,7 @@ class Profile(PaymentechResource):
     order_default_description: Optional[str] = Field(alias="OrderDefaultDescription", max_length=64)
     order_default_amount: Optional[str] = Field(alias="OrderDefaultAmount", max_length=12)
     customer_account_type: Optional[str] = Field(alias="CustomerAccountType", default="CC", max_length=0)
-    status: Optional[str] = Field(alias="Status", default="A", max_length=2)
+    status: Optional[str] = Field(alias="Status", max_length=2)
     card_number: Optional[str] = Field(alias="CCAccountNum", max_length=22)
     card_expiration: Optional[str] = Field(alias="CCExpireDate", max_length=6)
     bank_account_type: Optional[str] = Field(alias="ECPAccountType", max_length=1)
