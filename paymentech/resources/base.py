@@ -15,19 +15,23 @@ class PaymentechResource(BaseModel):
     customer_bin: Optional[str] = Field(alias="CustomerBin")
     merchant_id: Optional[str] = Field(alias="CustomerMerchantID")
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, **data):
+        super().__init__(**data)
+        self.assign(data)
 
+    def serialize(self):
         self.username = paymentech.configuration.get("username")
         self.password = paymentech.configuration.get("password")
         self.bin = self.customer_bin = paymentech.configuration.get("bin")
         self.merchant_id = paymentech.configuration.get("merchant_id")
 
-    def serialize(self):
         payload = ElementTree.Element("Request")
         wrapper = ElementTree.SubElement(payload, self.__config__.wrapper)
         dataset = self.dict(by_alias=True)
         for key, value in dataset.items():
+            if key in getattr(self.__config__, "skip", []):
+                continue
+
             if value is None:
                 continue
 
@@ -47,14 +51,27 @@ class PaymentechResource(BaseModel):
 
         return response
 
-    @staticmethod
-    def process_result(result):
+    def process_result(self, result):
         result = ElementTree.fromstring(result)
         elements = result[0]
 
-        dataset = {
-            child.tag: child.text
-            for child in elements
-        }
+        dataset = {child.tag: child.text for child in elements}
 
-        return dataset
+        response = self.__config__.response()
+        return response.assign(dataset)
+
+    def assign(self, dataset):
+        dataset = dataset or {}
+
+        for field, value in self.__dict__.items():
+            if field not in self.__fields__:
+                continue
+
+            alias = self.__fields__[field].alias
+            if alias not in dataset and field not in dataset:
+                continue
+
+            result_value = dataset.get(alias, dataset.get(field))
+            setattr(self, field, result_value)
+
+        return self
