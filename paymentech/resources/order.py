@@ -1,15 +1,19 @@
 from typing import Optional
+import uuid
 
 from pydantic import Field
 
+from paymentech import exceptions
+from paymentech.resources.authorization import MarkForCapture
 from paymentech.resources.base import PaymentechResource
+from paymentech.resources.reversal import Reversal
 
 
 class Order(PaymentechResource):
     username: Optional[str] = Field(alias="OrbitalConnectionUsername")
     password: Optional[str] = Field(alias="OrbitalConnectionPassword")
     industry_type: Optional[str] = Field(alias="IndustryType", default="EC", max_length=2)
-    message_type: Optional[str] = Field(alias="MessageType", default="AC", max_length=2)
+    message_type: Optional[str] = Field(alias="MessageType", max_length=2)
     bin: Optional[str] = Field(alias="BIN")
     merchant_id: Optional[str] = Field(alias="MerchantID")
     terminal_id: Optional[str] = Field(alias="TerminalID", default="001", max_length=3)
@@ -45,15 +49,6 @@ class Order(PaymentechResource):
     cardholder_name: Optional[str] = Field(alias="AVSname")
     country_code: Optional[str] = Field(alias="AVScountryCode", default="US", max_length=2)
     shipping_method: Optional[str] = Field(alias="ShippingMethod", max_length=1)
-    destination_zip: Optional[str] = Field(alias="AVSDestzip", max_length=10)
-    destination_address1: Optional[str] = Field(alias="AVSDestzip", max_length=30)
-    destination_address2: Optional[str] = Field(alias="AVSDestaddress2", max_length=28)
-    destination_city: Optional[str] = Field(alias="AVSDestcity", max_length=20)
-    destination_state: Optional[str] = Field(alias="AVSDeststate", max_length=2)
-    destination_phone_number: Optional[str] = Field(alias="AVSDestphoneNum", max_length=14)
-    destination_phone_type: Optional[str] = Field(alias="AVSDestPhoneType", max_length=1)
-    destination_name: Optional[str] = Field(alias="AVSDestname", max_length=30)
-    destination_country_code: Optional[str] = Field(alias="AVSDestcountryCode", max_length=2)
     customer_profile_method: Optional[str] = Field(alias="CustomerProfileFromOrderInd", max_length=5)
     customer_reference_number: Optional[str] = Field(alias="CustomerRefNum", max_length=22)
     customer_automatic_number_identification: Optional[str] = Field(alias="CustomerAni", max_length=10)
@@ -72,10 +67,6 @@ class Order(PaymentechResource):
     shipping_reference: Optional[str] = Field(alias="ShippingRef", max_length=40)
     tax_type: Optional[str] = Field(alias="TaxInd", max_length=1)
     tax: Optional[str] = Field(alias="Tax", max_length=12)
-    amex_transaction_advice_addendum1: Optional[str] = Field(alias="AMEXTranAdvAddn1", max_length=40)
-    amex_transaction_advice_addendum2: Optional[str] = Field(alias="AMEXTranAdvAddn2", max_length=40)
-    amex_transaction_advice_addendum3: Optional[str] = Field(alias="AMEXTranAdvAddn3", max_length=40)
-    amex_transaction_advice_addendum4: Optional[str] = Field(alias="AMEXTranAdvAddn4", max_length=40)
     soft_descriptor_merchant: Optional[str] = Field(alias="SDMerchantName", max_length=25)
     soft_descriptor_product: Optional[str] = Field(alias="SDProductDescription", max_length=18)
     soft_descriptor_city: Optional[str] = Field(alias="SDMerchantCity", max_length=13)
@@ -96,13 +87,6 @@ class Order(PaymentechResource):
     managed_billing_frequency: Optional[str] = Field(alias="MBRecurringFrequency", max_length=64)
     managed_billing_deferred_bill_date: Optional[str] = Field(alias="MBDeferredBillDate", max_length=8)
     transaction_reference_number: Optional[str] = Field(alias="TxRefNum", max_length=40)
-    purchase_order_number: Optional[str] = Field(alias="PCOrderNum", max_length=17)
-    purchase_order_name: Optional[str] = Field(alias="PCDestName", max_length=30)
-    purchase_order_address1: Optional[str] = Field(alias="PCDestAddress1", max_length=30)
-    purchase_order_address2: Optional[str] = Field(alias="PCDestAddress2", max_length=30)
-    purchase_order_city: Optional[str] = Field(alias="PCDestCity", max_length=20)
-    purchase_order_state: Optional[str] = Field(alias="PCDestState", max_length=2)
-    purchase_order_zip: Optional[str] = Field(alias="PCDestZip", max_length=10)
     partial_auth_indicator: Optional[str] = Field(alias="PartialAuthInd", max_length=1)
     account_updater_eligibility: Optional[str] = Field(alias="AccountUpdaterEligibility", max_length=1)
     use_stored_aav_indicator: Optional[str] = Field(alias="UseStoredAAVInd", max_length=1)
@@ -110,15 +94,43 @@ class Order(PaymentechResource):
     amount: Optional[int] = Field(alias="Amount")
     # NOTE: Skipping all Level 3 transaction elements and a significant number of other elements for now
 
+    class Config:
+        wrapper = "NewOrder"
+
     def authenticate(self, configuration):
         self.username = configuration.get("username")
         self.password = configuration.get("password")
         self.bin = configuration.get("bin")
         self.merchant_id = configuration.get("merchant_id")
 
-    class Config:
-        wrapper = "NewOrder"
-        skip = ["CustomerBin"]
+    def generate_order_id(self):
+        self.order_id = self.order_id or uuid.uuid4().node
 
-    def create(self):
+    def authorize(self):
+        self.message_type = "A"
+        self.generate_order_id()
         return self.transact()
+
+    def capture(self, amount=None):
+        mark_for_capture = MarkForCapture(
+            order_id=self.order_id,
+            transaction_reference_number=self.transaction_reference_number
+        )
+        amount = amount or self.amount
+        if not amount or amount < 0:
+            raise exceptions.PaymentechException("Captured amount must be greater than zero")
+
+        return mark_for_capture.capture(amount)
+
+    def generate(self):
+        self.message_type = "AC"
+        self.generate_order_id()
+        return self.transact()
+
+    def reverse(self, amount=None):
+        reversal = Reversal(
+            order_id=self.order_id,
+            transaction_reference_number=self.transaction_reference_number
+        )
+
+        return reversal.reverse(amount)
