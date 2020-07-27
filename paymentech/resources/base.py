@@ -4,7 +4,7 @@ from xml.etree import ElementTree
 from pydantic import BaseModel
 
 import paymentech
-from paymentech import service
+from paymentech import exceptions, service
 
 
 class PaymentechResource(BaseModel):
@@ -16,7 +16,8 @@ class PaymentechResource(BaseModel):
     def authenticate(self, configuration):
         raise NotImplementedError()
 
-    def prettify(self, text):
+    @staticmethod
+    def prettify(text):
         payload = minidom.parseString(text)
         payload = payload.toprettyxml(indent="    ", encoding="UTF-8").decode("utf-8")
 
@@ -29,9 +30,6 @@ class PaymentechResource(BaseModel):
         wrapper = ElementTree.SubElement(payload, self.__config__.wrapper)
         dataset = self.dict(by_alias=True)
         for key, value in dataset.items():
-            if key in getattr(self.__config__, "skip", []):
-                continue
-
             if value is None:
                 continue
 
@@ -46,17 +44,43 @@ class PaymentechResource(BaseModel):
     def transact(self):
         payload = self.serialize()
         result = service.request(payload)
-        response = self.process_result(result)
+        dataset = self.process_result(result)
 
-        return response
+        self.validate_response(dataset)
+        self.assign(dataset)
 
-    def process_result(self, result):
+        return self
+
+    @staticmethod
+    def validate_response(result):
+        code_fields = ["ProcStatus", "ProfileProcStatus"]
+        message_fields = ["StatusMsg", "CustomerProfileMessage"]
+
+        codes = [
+            result[field]
+            for field in code_fields
+            if field in result and result[field] not in (None, 0, "0")
+        ]
+        messages = [
+            result[field]
+            for field in message_fields
+            if field in result and result[field] not in (None, 0, "0")
+        ]
+
+        code = next(iter(codes), None)
+        message = next(iter(messages), None)
+
+        if code:
+            raise exceptions.PaymentechException(message, code)
+
+    @staticmethod
+    def process_result(result):
         result = ElementTree.fromstring(result)
         elements = result[0]
 
         dataset = {child.tag: child.text for child in elements}
 
-        return self.assign(dataset)
+        return dataset
 
     def assign(self, dataset):
         dataset = dataset or {}
