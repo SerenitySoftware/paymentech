@@ -1,29 +1,29 @@
-from typing import Optional
 from xml.dom import minidom
 from xml.etree import ElementTree
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 import paymentech
 from paymentech import service
 
 
 class PaymentechResource(BaseModel):
-    username: Optional[str] = Field(alias="OrbitalConnectionUsername")
-    password: Optional[str] = Field(alias="OrbitalConnectionPassword")
-    bin: Optional[str] = Field(alias="BIN")
-    customer_bin: Optional[str] = Field(alias="CustomerBin")
-    merchant_id: Optional[str] = Field(alias="CustomerMerchantID")
 
     def __init__(self, **data):
         super().__init__(**data)
         self.assign(data)
 
+    def authenticate(self, configuration):
+        raise NotImplementedError()
+
+    def prettify(self, text):
+        payload = minidom.parseString(text)
+        payload = payload.toprettyxml(indent="    ", encoding="UTF-8").decode("utf-8")
+
+        return payload
+
     def serialize(self):
-        self.username = paymentech.configuration.get("username")
-        self.password = paymentech.configuration.get("password")
-        self.bin = self.customer_bin = paymentech.configuration.get("bin")
-        self.merchant_id = paymentech.configuration.get("merchant_id")
+        self.authenticate(paymentech.configuration)
 
         payload = ElementTree.Element("Request")
         wrapper = ElementTree.SubElement(payload, self.__config__.wrapper)
@@ -36,11 +36,10 @@ class PaymentechResource(BaseModel):
                 continue
 
             child = ElementTree.SubElement(wrapper, key)
-            child.text = value
+            child.text = str(value)
 
         payload = ElementTree.tostring(payload, 'unicode')
-        payload = minidom.parseString(payload)
-        payload = payload.toprettyxml(indent="  ", encoding="UTF-8")
+        payload = self.prettify(payload)
 
         return payload
 
@@ -57,8 +56,7 @@ class PaymentechResource(BaseModel):
 
         dataset = {child.tag: child.text for child in elements}
 
-        response = self.__config__.response()
-        return response.assign(dataset)
+        return self.assign(dataset)
 
     def assign(self, dataset):
         dataset = dataset or {}
