@@ -60,23 +60,18 @@ class Profile(PaymentechResource):
 
     def read(self):
         self.validate_customer_reference_number("read")
-
         self.customer_profile_action = "R"
 
         return self.transact()
 
     def update(self):
         self.validate_customer_reference_number("update")
-
         self.customer_profile_action = "U"
-        self.customer_profile_order_override = "NO"
-        self.customer_profile_from_order = "S"
 
         return self.transact()
 
     def delete(self):
         self.validate_customer_reference_number("delete")
-
         self.customer_profile_action = "D"
 
         return self.transact()
