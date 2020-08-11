@@ -132,6 +132,13 @@ class Order(PaymentechResource):
         self.generate_order_id()
         return self.transact()
 
+    def refund(self):
+        self.message_type = "R"
+        if not self.order_id and not self.transaction_reference_number:
+            self.generate_order_id()
+
+        return self.transact()
+
     def reverse(self, amount=None):
         reversal = Reversal(
             order_id=self.order_id,
