@@ -111,6 +111,11 @@ class Order(PaymentechResource):
         self.generate_order_id()
         return self.transact()
 
+    def authorize_and_capture(self):
+        self.message_type = "AC"
+        self.generate_order_id()
+        return self.transact()
+
     def capture(self, amount=None):
         mark_for_capture = MarkForCapture(
             order_id=self.order_id,
