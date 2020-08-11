@@ -29,6 +29,10 @@ def request(payload):
         "Interface-Version": f"Chase Paymentech Python SDK/{version}"
     }
 
+    # If we are forcing failover, skip the first URL
+    if paymentech.configuration.get("failover", False):
+        urls = urls[1:]
+
     for url in urls:
         for attempt in range(maximum_attempts):
             try:
