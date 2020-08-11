@@ -43,13 +43,25 @@ class PaymentechResource(BaseModel):
 
     def transact(self):
         payload = self.serialize()
-        result = service.request(payload)
+        trace, result = service.request(payload)
         dataset = self.process_result(result)
 
         self.validate_response(dataset)
         self.assign(dataset)
+        self.set_last_trace(trace)
 
         return self
+
+    def set_last_trace(self, trace):
+        self.__config__.trace = trace
+
+    def get_last_trace(self):
+        try:
+            return self.__config__.trace
+        except Exception:
+            pass
+
+        return None
 
     @staticmethod
     def validate_response(result):

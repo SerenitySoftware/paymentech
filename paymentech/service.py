@@ -35,7 +35,7 @@ def request(payload):
                 response = requests.post(url, data=payload, headers=headers)
 
                 if response and response.text:
-                    return response.text
+                    return trace, response.text
             except Exception:
                 pass
 
