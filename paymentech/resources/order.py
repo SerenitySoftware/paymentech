@@ -39,21 +39,21 @@ class Order(PaymentechResource):
     customer_email_type: Optional[str] = Field(alias="EmailAddressSubtype", max_length=1)
     customer_browser_name: Optional[str] = Field(alias="CustomerBrowserName", max_length=60)
     customer_ip_address: Optional[str] = Field(alias="CustomerIpAddress", max_length=45)
+    zip: Optional[str] = Field(alias="AVSzip", max_length=10)
     address1: Optional[str] = Field(alias="AVSaddress1", max_length=30)
     address2: Optional[str] = Field(alias="AVSaddress2", max_length=30)
     city: Optional[str] = Field(alias="AVScity", max_length=20)
     state: Optional[str] = Field(alias="AVSstate", max_length=2)
-    zip: Optional[str] = Field(alias="AVSzip", max_length=10)
     phone_number: Optional[str] = Field(alias="AVSphoneNum", max_length=14)
-    phone_number_type: Optional[str] = Field(alias="AVSPhoneType", max_length=1)
     cardholder_name: Optional[str] = Field(alias="AVSname")
-    country_code: Optional[str] = Field(alias="AVScountryCode", default="US", max_length=2)
+    phone_number_type: Optional[str] = Field(alias="AVSPhoneType", max_length=1)
+    country_code: Optional[str] = Field(alias="AVScountryCode", max_length=2)
     shipping_method: Optional[str] = Field(alias="ShippingMethod", max_length=1)
     customer_profile_method: Optional[str] = Field(alias="CustomerProfileFromOrderInd", max_length=5)
     customer_reference_number: Optional[str] = Field(alias="CustomerRefNum", max_length=22)
     customer_automatic_number_identification: Optional[str] = Field(alias="CustomerAni", max_length=10)
     customer_profile_order_override_method: Optional[str] = Field(
-        alias="CustomerProfileOrderOverrideInd", default="NO", max_length=2
+        alias="CustomerProfileOrderOverrideInd", max_length=2
     )
     customer_token_indicator: Optional[str] = Field(alias="DPANInd", max_length=1)
     status: Optional[str] = Field(alias="Status", max_length=2)
@@ -86,12 +86,12 @@ class Order(PaymentechResource):
     managed_billing_max_billings: Optional[str] = Field(alias="MBRecurringMaxBillings", max_length=6)
     managed_billing_frequency: Optional[str] = Field(alias="MBRecurringFrequency", max_length=64)
     managed_billing_deferred_bill_date: Optional[str] = Field(alias="MBDeferredBillDate", max_length=8)
+    order_id: Optional[str] = Field(alias="OrderID", max_length=22)
+    amount: Optional[int] = Field(alias="Amount")
     transaction_reference_number: Optional[str] = Field(alias="TxRefNum", max_length=40)
     partial_auth_indicator: Optional[str] = Field(alias="PartialAuthInd", max_length=1)
     account_updater_eligibility: Optional[str] = Field(alias="AccountUpdaterEligibility", max_length=1)
     use_stored_aav_indicator: Optional[str] = Field(alias="UseStoredAAVInd", max_length=1)
-    order_id: Optional[str] = Field(alias="OrderID", max_length=22)
-    amount: Optional[int] = Field(alias="Amount")
     # NOTE: Skipping all Level 3 transaction elements and a significant number of other elements for now
 
     class Config:
