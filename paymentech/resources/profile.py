@@ -73,6 +73,9 @@ class Profile(PaymentechResource):
     def delete(self):
         self.validate_customer_reference_number("delete")
         self.customer_profile_action = "D"
+        self.customer_account_type = None
+        self.customer_profile_order_override = None
+        self.customer_profile_from_order = None
 
         return self.transact()
 
