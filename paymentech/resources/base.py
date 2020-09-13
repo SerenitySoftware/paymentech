@@ -65,25 +65,36 @@ class PaymentechResource(BaseModel):
 
     @staticmethod
     def validate_response(result):
-        code_fields = ["ProcStatus", "ProfileProcStatus"]
-        message_fields = ["StatusMsg", "CustomerProfileMessage"]
+        message = result.get("StatusMsg", result.get("RespMsg", "Error"))
+        proc_status = result.get("ProcStatus", None)
+        if proc_status not in (None, 0, "0", "00"):
+            raise exceptions.PaymentechException(message, proc_status)
 
-        codes = [
-            result[field]
-            for field in code_fields
-            if field in result and result[field] not in (None, 0, "0")
-        ]
-        messages = [
-            result[field]
-            for field in message_fields
-            if field in result and result[field] not in (None, 0, "0")
-        ]
+        approval_status = result.get("ApprovalStatus", None)
+        if approval_status in (0, "0"):
+            message = message or "Payment declined"
+            raise exceptions.PaymentechException(message, approval_status)
 
-        code = next(iter(codes), None)
-        message = next(iter(messages), None)
+        if approval_status in (2, "2"):
+            message = message or "System error, please try again"
+            raise exceptions.PaymentechException(message, approval_status)
 
-        if code:
-            raise exceptions.PaymentechException(message, code)
+        cvv_resp_code = result.get("CVV2RespCode", None)
+        if cvv_resp_code in ("N", "S", "I", "Y"):
+            cvv_lookup = {
+                "N": "CVV doesn't match",
+                "S": "CVV is missing",
+                "I": "Invalid CVV",
+                "Y": "Invalid CVV"
+            }
+
+            message = cvv_lookup.get(cvv_resp_code)
+            raise exceptions.PaymentechException(message, cvv_resp_code)
+
+        profile_proc_status = result.get("ProfileProcStatus", None)
+        if profile_proc_status not in (None, 0, "0", "00"):
+            message = result.get("CustomerProfileMessage", message)
+            raise exceptions.PaymentechException(message, profile_proc_status)
 
     @staticmethod
     def process_result(result):
