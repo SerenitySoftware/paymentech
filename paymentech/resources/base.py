@@ -50,7 +50,7 @@ class PaymentechResource(BaseModel):
         self.assign(dataset)
         self.set_last_trace(trace)
 
-        return self
+        return result
 
     def set_last_trace(self, trace):
         self.__config__.trace = trace
