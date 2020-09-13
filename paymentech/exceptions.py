@@ -5,4 +5,4 @@ class PaymentechException(Exception):
         self.code = code or 0
 
     def __str__(self):
-        return f"Error {self.code}: {self.message}"
+        return self.message
