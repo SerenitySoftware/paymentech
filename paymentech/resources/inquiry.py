@@ -24,4 +24,4 @@ class Inquiry(PaymentechResource):
         wrapper = "Inquiry"
 
     def query(self):
-        return self.transact()
+        return self.transact(validate=False)
