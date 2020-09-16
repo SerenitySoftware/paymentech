@@ -23,16 +23,14 @@ class PaymentechResource(BaseModel):
 
         return payload
 
-    def serialize(self):
+    def serialize(self, exclude=[]):
         self.authenticate(paymentech.configuration)
 
         payload = ElementTree.Element("Request")
         wrapper = ElementTree.SubElement(payload, self.__config__.wrapper)
-        dataset = self.dict(by_alias=True)
-        for key, value in dataset.items():
-            if value is None:
-                continue
+        dataset = self.dict(exclude=exclude, exclude_none=True, by_alias=True)
 
+        for key, value in dataset.items():
             child = ElementTree.SubElement(wrapper, key)
             child.text = str(value)
 
@@ -41,8 +39,8 @@ class PaymentechResource(BaseModel):
 
         return payload
 
-    def transact(self, validate=True):
-        payload = self.serialize()
+    def transact(self, validate=True, exclude=[]):
+        payload = self.serialize(exclude=exclude)
         trace, result = service.request(payload)
         dataset = self.process_result(result)
 

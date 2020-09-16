@@ -62,7 +62,13 @@ class Profile(PaymentechResource):
         self.validate_customer_reference_number("read")
         self.customer_profile_action = "R"
 
-        return self.transact()
+        return self.transact(
+            exclude=[
+                'customer_account_type',
+                'customer_profile_order_override',
+                'customer_profile_from_order'
+            ]
+        )
 
     def update(self):
         self.validate_customer_reference_number("update")
