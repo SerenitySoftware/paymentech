@@ -23,7 +23,7 @@ class PaymentechResource(BaseModel):
 
         return payload
 
-    def serialize(self, exclude=[]):
+    def serialize(self, exclude=set()):
         self.authenticate(paymentech.configuration)
 
         payload = ElementTree.Element("Request")
@@ -39,7 +39,7 @@ class PaymentechResource(BaseModel):
 
         return payload
 
-    def transact(self, validate=True, exclude=[]):
+    def transact(self, validate=True, exclude=set()):
         payload = self.serialize(exclude=exclude)
         trace, result = service.request(payload)
         dataset = self.process_result(result)
