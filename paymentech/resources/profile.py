@@ -63,10 +63,10 @@ class Profile(PaymentechResource):
         self.customer_profile_action = "R"
 
         return self.transact(
-            exclude={
-                'customer_account_type',
-                'customer_profile_order_override',
-                'customer_profile_from_order'
+            include={
+                'customer_profile_action',
+                'customer_reference_number',
+                'customer_bin',
             }
         )
 

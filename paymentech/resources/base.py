@@ -23,12 +23,25 @@ class PaymentechResource(BaseModel):
 
         return payload
 
-    def serialize(self, exclude=set()):
+    def serialize(self, include=set(), exclude=set()):
         self.authenticate(paymentech.configuration)
 
         payload = ElementTree.Element("Request")
         wrapper = ElementTree.SubElement(payload, self.__config__.wrapper)
-        dataset = self.dict(exclude=exclude, exclude_none=True, by_alias=True)
+
+        params = {}
+        if include:
+            base_includes = {'username', 'password', 'merchant_id'}
+            params['include'] = base_includes.union(include)
+
+        if exclude:
+            params['exclude'] = exclude
+
+        dataset = self.dict(
+            exclude_none=True,
+            by_alias=True,
+            **params
+        )
 
         for key, value in dataset.items():
             child = ElementTree.SubElement(wrapper, key)
@@ -39,8 +52,8 @@ class PaymentechResource(BaseModel):
 
         return payload
 
-    def transact(self, validate=True, exclude=set()):
-        payload = self.serialize(exclude=exclude)
+    def transact(self, validate=True, include=set(), exclude=set()):
+        payload = self.serialize(include=include, exclude=exclude)
         trace, result = service.request(payload)
         dataset = self.process_result(result)
 
