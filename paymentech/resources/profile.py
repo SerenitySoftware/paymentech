@@ -62,7 +62,13 @@ class Profile(PaymentechResource):
         self.validate_customer_reference_number("read")
         self.customer_profile_action = "R"
 
-        return self.transact()
+        return self.transact(
+            include={
+                'customer_profile_action',
+                'customer_reference_number',
+                'customer_bin',
+            }
+        )
 
     def update(self):
         self.validate_customer_reference_number("update")
