@@ -81,16 +81,16 @@ class PaymentechResource(BaseModel):
         message = result.get("StatusMsg", result.get("RespMsg", "Error"))
         proc_status = result.get("ProcStatus", None)
         if proc_status not in (None, 0, "0", "00"):
-            raise exceptions.PaymentechException(message, proc_status)
+            raise exceptions.PaymentechException(message, proc_status, result)
 
         approval_status = result.get("ApprovalStatus", None)
         if approval_status in (0, "0"):
             message = message or "Payment declined"
-            raise exceptions.PaymentechException(message, approval_status)
+            raise exceptions.PaymentechException(message, approval_status, result)
 
         if approval_status in (2, "2"):
             message = message or "System error, please try again"
-            raise exceptions.PaymentechException(message, approval_status)
+            raise exceptions.PaymentechException(message, approval_status, result)
 
         cvv_resp_code = result.get("CVV2RespCode", None)
         if cvv_resp_code in ("N", "S", "I", "Y"):
@@ -102,12 +102,12 @@ class PaymentechResource(BaseModel):
             }
 
             message = cvv_lookup.get(cvv_resp_code)
-            raise exceptions.PaymentechException(message, cvv_resp_code)
+            raise exceptions.PaymentechException(message, cvv_resp_code, result)
 
         profile_proc_status = result.get("ProfileProcStatus", None)
         if profile_proc_status not in (None, 0, "0", "00"):
             message = result.get("CustomerProfileMessage", message)
-            raise exceptions.PaymentechException(message, profile_proc_status)
+            raise exceptions.PaymentechException(message, profile_proc_status, result)
 
     @staticmethod
     def process_result(result):
