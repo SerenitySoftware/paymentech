@@ -93,10 +93,9 @@ class PaymentechResource(BaseModel):
             raise exceptions.PaymentechException(message, approval_status, result)
 
         cvv_resp_code = result.get("CVV2RespCode", None)
-        if cvv_resp_code in ("N", "S", "I", "Y"):
+        if cvv_resp_code in ("N", "I", "Y"):
             cvv_lookup = {
                 "N": "CVV doesn't match",
-                "S": "CVV is missing",
                 "I": "Invalid CVV",
                 "Y": "Invalid CVV"
             }
