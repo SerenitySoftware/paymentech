@@ -123,7 +123,7 @@ class Order(PaymentechResource):
         )
         amount = amount or self.amount
         if not amount or amount < 0:
-            raise exceptions.PaymentechException("Captured amount must be greater than zero")
+            raise exceptions.PaymentechException("Captured amount must be greater than zero", "validation")
 
         return mark_for_capture.capture(amount)
 
