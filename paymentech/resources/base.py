@@ -38,6 +38,7 @@ class PaymentechResource(BaseModel):
             params['exclude'] = exclude
 
         dataset = self.dict(
+            exclude_none=True,
             by_alias=True,
             **params
         )
