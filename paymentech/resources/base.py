@@ -56,11 +56,11 @@ class PaymentechResource(BaseModel):
         payload = self.serialize(include=include, exclude=exclude)
         trace, result = service.request(payload)
         dataset = self.process_result(result)
+        self.assign(dataset)
 
         if validate:
             self.validate_response(dataset)
 
-        self.assign(dataset)
         self.set_last_trace(trace)
 
         return result
