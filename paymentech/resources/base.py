@@ -101,7 +101,7 @@ class PaymentechResource(BaseModel):
             }
 
             message = cvv_lookup.get(cvv_resp_code)
-            raise exceptions.PaymentechException(message, "avs", cvv_resp_code, result)
+            raise exceptions.PaymentechException(message, "cvv", cvv_resp_code, result)
 
         profile_proc_status = result.get("ProfileProcStatus", None)
         if profile_proc_status not in (None, 0, "0", "00"):
