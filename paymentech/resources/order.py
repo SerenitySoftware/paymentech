@@ -92,6 +92,8 @@ class Order(PaymentechResource):
     partial_auth_indicator: Optional[str] = Field(alias="PartialAuthInd", max_length=1)
     account_updater_eligibility: Optional[str] = Field(alias="AccountUpdaterEligibility", max_length=1)
     use_stored_aav_indicator: Optional[str] = Field(alias="UseStoredAAVInd", max_length=1)
+    mit_message_type: Optional[str] = Field(alias="MITMsgType", max_length=4)
+    mit_stored_credential_indicator: Optional[str] = Field(alias="MITStoredCredentialInd", max_length=1)
     # NOTE: Skipping all Level 3 transaction elements and a significant number of other elements for now
 
     class Config:
