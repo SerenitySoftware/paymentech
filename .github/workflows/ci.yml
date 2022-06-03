@@ -46,7 +46,7 @@ jobs:
 
   publish:
     name: Publish to PyPI
-    if: contains(github.ref, 'tags/v')
+    if: contains(github.ref, 'tags/')
     needs: [static, tests]
     runs-on: ubuntu-latest
     steps:
