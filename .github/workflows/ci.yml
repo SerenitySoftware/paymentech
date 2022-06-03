@@ -1,0 +1,64 @@
+name: Test and Publish
+on: push
+
+jobs:
+  static:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Out Code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Install requirements
+        run: pip install -r requirements_tests.txt
+
+      - name: Run flake8
+        uses: suo/flake8-github-action@releases/v1
+        with:
+          checkName: 'static'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  tests:
+    name: Automated Testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Out Code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Install requirements
+        run: pip install -r requirements_tests.txt
+
+      - name: Run pytest
+        run: pytest
+
+  publish:
+    name: Publish to PyPI
+    if: contains(github.ref, 'tags/v')
+    needs: [static, tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          skip_existing: true
