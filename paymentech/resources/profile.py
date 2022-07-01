@@ -44,6 +44,8 @@ class Profile(PaymentechResource):
     biller_reference: Optional[str] = Field(alias="BillerReferenceNumber", max_length=25)
     account_updater_eligibility: Optional[str] = Field(alias="AccountUpdaterEligibility", max_length=1)
     card_brand: Optional[str] = Field(alias="CardBrand", max_length=22)
+    mit_message_type: Optional[str] = Field(alias="MITMsgType", max_length=4)
+    mit_submitted_transaction_id: Optional[str] = Field(alias="MITSubmittedTransactionID", max_length=15)
 
     class Config:
         wrapper = "Profile"
