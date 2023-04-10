@@ -79,6 +79,18 @@ class PaymentechResource(BaseModel):
     @staticmethod
     def validate_response(result):
         message = result.get("StatusMsg", result.get("RespMsg", "Error"))
+
+        cvv_resp_code = result.get("CVV2RespCode", None)
+        if cvv_resp_code in ("N", "I", "Y"):
+            cvv_lookup = {
+                "N": "CVV doesn't match",
+                "I": "Invalid CVV",
+                "Y": "Invalid CVV"
+            }
+
+            message = cvv_lookup.get(cvv_resp_code)
+            raise exceptions.PaymentechException(message, "cvv", cvv_resp_code, result)
+
         proc_status = result.get("ProcStatus", None)
         if proc_status not in (None, 0, "0", "00"):
             raise exceptions.PaymentechException(message, "processor", proc_status, result)
@@ -91,17 +103,6 @@ class PaymentechResource(BaseModel):
         if approval_status in (2, "2"):
             message = message or "System error, please try again"
             raise exceptions.PaymentechException(message, "system", approval_status, result)
-
-        cvv_resp_code = result.get("CVV2RespCode", None)
-        if cvv_resp_code in ("N", "I", "Y"):
-            cvv_lookup = {
-                "N": "CVV doesn't match",
-                "I": "Invalid CVV",
-                "Y": "Invalid CVV"
-            }
-
-            message = cvv_lookup.get(cvv_resp_code)
-            raise exceptions.PaymentechException(message, "cvv", cvv_resp_code, result)
 
         profile_proc_status = result.get("ProfileProcStatus", None)
         if profile_proc_status not in (None, 0, "0", "00"):
