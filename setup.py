@@ -15,9 +15,6 @@ with open(version_path, "r") as version_file:
     # Execute the code in version.py.
     exec(compile(version_file.read(), version_path, 'exec'))
 
-requirements_path = os.path.join(base_path, "requirements.txt")
-with open(requirements_path, "r") as requirements_file:
-    install_requires = requirements_file.read().splitlines()
 
 setuptools.setup(
     name="paymentech",
@@ -37,6 +34,6 @@ setuptools.setup(
         "License :: Freely Distributable"
     ],
     keywords=['chase', 'paymentech', 'e-commerce', 'payments'],
-    install_requires=install_requires,
+    install_requires=["pydantic==1.6.2", "requests==2.24.0"],
     package_data={'paymentech': ['templates/*.xml']}
 )
