@@ -12,6 +12,9 @@ with open(version_path) as version_file:
     # Execute the code in version.py.
     exec(compile(version_file.read(), version_path, 'exec'))
 
+with open("requirements.txt", "r") as requirements_file:
+    install_requires = requirements_file.read().splitlines()
+
 setuptools.setup(
     name="paymentech",
     version=version,
@@ -30,6 +33,6 @@ setuptools.setup(
         "License :: Freely Distributable"
     ],
     keywords=['chase', 'paymentech', 'e-commerce', 'payments'],
-    install_requires=['requests', 'pydantic'],
+    install_requires=install_requires,
     package_data={'paymentech': ['templates/*.xml']}
 )
