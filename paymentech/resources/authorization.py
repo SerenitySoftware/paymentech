@@ -6,18 +6,18 @@ from paymentech.resources.base import PaymentechResource
 
 
 class MarkForCapture(PaymentechResource):
-    username: Optional[str] = Field(alias="OrbitalConnectionUsername")
-    password: Optional[str] = Field(alias="OrbitalConnectionPassword")
-    order_id: Optional[str] = Field(alias="OrderID", max_length=22)
-    amount: Optional[int] = Field(alias="Amount")
-    bin: Optional[str] = Field(alias="BIN")
-    merchant_id: Optional[str] = Field(alias="MerchantID")
+    username: Optional[str] = Field(alias="OrbitalConnectionUsername", default=None)
+    password: Optional[str] = Field(alias="OrbitalConnectionPassword", default=None)
+    order_id: Optional[str] = Field(alias="OrderID", default=None, max_length=22)
+    amount: Optional[int] = Field(alias="Amount", default=None)
+    bin: Optional[str] = Field(alias="BIN", default=None)
+    merchant_id: Optional[str] = Field(alias="MerchantID", default=None)
     terminal_id: Optional[str] = Field(alias="TerminalID", default="001", max_length=3)
-    transaction_reference_number: Optional[str] = Field(alias="TxRefNum", max_length=40)
-    processing_status: Optional[str] = Field(alias="ProcStatus", max_length=6)
-    approval_status: Optional[int] = Field(alias="ApprovalStatus")
-    status_message: Optional[str] = Field(alias="StatusMsg")
-    response_time: Optional[int] = Field(alias="RespTime")
+    transaction_reference_number: Optional[str] = Field(alias="TxRefNum", default=None, max_length=40)
+    processing_status: Optional[str] = Field(alias="ProcStatus", default=None, max_length=6)
+    approval_status: Optional[int] = Field(alias="ApprovalStatus", default=None)
+    status_message: Optional[str] = Field(alias="StatusMsg", default=None)
+    response_time: Optional[int] = Field(alias="RespTime", default=None)
 
     def authenticate(self, configuration):
         self.username = configuration.get("username")
