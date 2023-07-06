@@ -3,16 +3,20 @@ import os
 import setuptools
 
 
-with open("README.md", "r") as readme_file:
+base_path = os.path.split(__file__)[0]
+
+readme_path = os.path.join(base_path, "README.md")
+with open(readme_path, "r") as readme_file:
     long_description = readme_file.read()
 
-version_path = os.path.join(os.path.split(__file__)[0], "paymentech/version.py")
-with open(version_path) as version_file:
+version_path = os.path.join(base_path, "paymentech/version.py")
+with open(version_path, "r") as version_file:
     version = ""
     # Execute the code in version.py.
     exec(compile(version_file.read(), version_path, 'exec'))
 
-with open("requirements.txt", "r") as requirements_file:
+requirements_path = os.path.join(base_path, "requirements.txt")
+with open(requirements_path, "r") as requirements_file:
     install_requires = requirements_file.read().splitlines()
 
 setuptools.setup(
