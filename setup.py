@@ -34,6 +34,6 @@ setuptools.setup(
         "License :: Freely Distributable"
     ],
     keywords=['chase', 'paymentech', 'e-commerce', 'payments'],
-    install_requires=["pydantic<=1.10.11", "requests"],
+    install_requires=["pydantic>=2.0.0", "requests"],
     package_data={'paymentech': ['templates/*.xml']}
 )
