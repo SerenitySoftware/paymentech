@@ -16,6 +16,11 @@ class PaymentechResource(BaseModel):
     def authenticate(self, configuration):
         raise NotImplementedError()
 
+    @property
+    def wrapper(self):
+        # This will be overridden by subclasses
+        raise NotImplementedError("Subclasses must implement the wrapper property")
+
     @staticmethod
     def prettify(text):
         payload = minidom.parseString(text)
@@ -27,27 +32,23 @@ class PaymentechResource(BaseModel):
         self.authenticate(paymentech.configuration)
 
         payload = ElementTree.Element("Request")
-        wrapper = ElementTree.SubElement(payload, self.__config__.wrapper)
+        wrapper = ElementTree.SubElement(payload, self.wrapper)
 
         params = {}
         if include:
-            base_includes = {'username', 'password', 'merchant_id'}
-            params['include'] = base_includes.union(include)
+            base_includes = {"username", "password", "merchant_id"}
+            params["include"] = base_includes.union(include)
 
         if exclude:
-            params['exclude'] = exclude
+            params["exclude"] = exclude
 
-        dataset = self.dict(
-            exclude_none=True,
-            by_alias=True,
-            **params
-        )
+        dataset = self.model_dump(exclude_none=True, by_alias=True, **params)
 
         for key, value in dataset.items():
             child = ElementTree.SubElement(wrapper, key)
             child.text = str(value)
 
-        payload = ElementTree.tostring(payload, 'unicode')
+        payload = ElementTree.tostring(payload, "unicode")
         payload = self.prettify(payload)
 
         return payload
@@ -66,15 +67,10 @@ class PaymentechResource(BaseModel):
         return result
 
     def set_last_trace(self, trace):
-        self.__config__.trace = trace
+        self._trace = trace
 
     def get_last_trace(self):
-        try:
-            return self.__config__.trace
-        except Exception:
-            pass
-
-        return None
+        return getattr(self, "_trace", None)
 
     @staticmethod
     def validate_response(result):
@@ -82,11 +78,7 @@ class PaymentechResource(BaseModel):
 
         cvv_resp_code = result.get("CVV2RespCode", None)
         if cvv_resp_code in ("N", "I", "Y"):
-            cvv_lookup = {
-                "N": "CVV doesn't match",
-                "I": "Invalid CVV",
-                "Y": "Invalid CVV"
-            }
+            cvv_lookup = {"N": "CVV doesn't match", "I": "Invalid CVV", "Y": "Invalid CVV"}
 
             message = cvv_lookup.get(cvv_resp_code)
             raise exceptions.PaymentechException(message, "cvv", cvv_resp_code, result)
@@ -122,10 +114,10 @@ class PaymentechResource(BaseModel):
         dataset = dataset or {}
 
         for field, value in self.__dict__.items():
-            if field not in self.__fields__:
+            if field not in self.model_fields:
                 continue
 
-            alias = self.__fields__[field].alias
+            alias = self.model_fields[field].alias
             if alias not in dataset and field not in dataset:
                 continue
 
