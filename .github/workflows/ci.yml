@@ -7,36 +7,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Out Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v1
-        with:
-          python-version: 3.8
-
-      - name: Install requirements
-        run: pip install -r requirements_tests.txt
-
-      - name: Run flake8
-        uses: suo/flake8-github-action@releases/v1
-        with:
-          checkName: 'static'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: astral-sh/ruff-action@v3
 
   tests:
     name: Automated Testing
     runs-on: ubuntu-latest
     steps:
       - name: Check Out Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v1
+      - uses: actions/setup-python@v5
         with:
-          python-version: 3.8
+          python-version: 3.12
 
       - name: Install requirements
         run: pip install -r requirements_tests.txt
@@ -50,11 +38,11 @@ jobs:
     needs: [static, tests]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v1
+      - uses: actions/setup-python@v5
         with:
-          python-version: 3.8
+          python-version: 3.12
 
       - name: Build
         run: |
